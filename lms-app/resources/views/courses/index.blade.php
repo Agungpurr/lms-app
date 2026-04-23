@@ -5,63 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Semua Kursus — LMSApp</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('light');
+        }
+    </script>
+
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* ── Dark mode (default) ── */
         :root {
             --bg: #0b0e1a; --bg2: #161b27; --bg3: #1e253a;
             --border: rgba(255,255,255,0.08);
             --text: #e8eaf0; --muted: #8892a4;
             --accent: #4f7eff; --accent2: #7c3aed;
+            --success: #10b981;
             --radius: 12px; --radius-lg: 20px;
+            --input-bg: #161b27;
         }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* ── Light mode ── */
+        html.light {
+            --bg: #f0f2f8; --bg2: #ffffff; --bg3: #e4e7f0;
+            --border: rgba(0,0,0,0.08);
+            --text: #1a1d2e; --muted: #6b7280;
+            --accent: #4f7eff; --accent2: #7c3aed;
+            --success: #10b981;
+            --input-bg: #ffffff;
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: background 0.2s, color 0.2s; }
+
         nav {
             display: flex; align-items: center; justify-content: space-between;
             padding: 18px 64px; border-bottom: 1px solid var(--border);
+            background: var(--bg2);
         }
         .logo { display:flex; align-items:center; gap:10px; font-size:17px; font-weight:800; text-decoration:none; color:var(--text); }
         .logo-icon { width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px; }
         .logo span { color: var(--accent); }
         .nav-links { display:flex; gap:10px; align-items:center; }
+
         .btn { display:inline-flex; align-items:center; gap:6px; padding:9px 18px; border-radius:10px; font-size:13px; font-weight:600; font-family:inherit; border:none; cursor:pointer; text-decoration:none; transition:all 0.15s; }
-        .btn-outline { border:1px solid var(--border); color:var(--text); }
+        .btn-outline { border:1px solid var(--border); color:var(--text); background:transparent; }
         .btn-outline:hover { border-color:var(--accent); color:var(--accent); }
         .btn-fill { background:var(--accent); color:#fff; }
         .btn-fill:hover { background:#3a6aff; }
 
-        .hero-small {
-            padding: 56px 64px 40px;
-            text-align: center;
+        .btn-dashboard {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff; padding: 9px 20px; border-radius: 10px;
+            font-weight: 700; font-size: 13px; text-decoration: none;
+            transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
         }
+        .btn-dashboard:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,126,255,0.3); color: #fff; }
+
+        .theme-toggle {
+            background: var(--bg3); border: 1px solid var(--border);
+            border-radius: 10px; padding: 8px 12px; cursor: pointer;
+            font-size: 15px; color: var(--text); transition: all 0.15s; line-height: 1;
+        }
+        .theme-toggle:hover { border-color: var(--accent); }
+
+        .hero-small { padding: 56px 64px 40px; text-align: center; }
         h1 { font-size:36px; font-weight:800; letter-spacing:-0.8px; margin-bottom:8px; }
         .sub { color:var(--muted); font-size:16px; }
 
         .filter-bar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 0 64px 32px;
-            flex-wrap: wrap;
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; padding: 0 64px 32px; flex-wrap: wrap;
         }
         .filter-bar input {
-            background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
-            padding: 10px 16px; color: var(--text); font-family:inherit; font-size:14px;
-            min-width: 280px;
+            background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px;
+            padding: 10px 16px; color: var(--text); font-family:inherit; font-size:14px; min-width: 280px;
         }
         .filter-bar input:focus { outline:none; border-color:var(--accent); }
         .filter-bar select {
-            background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+            background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px;
             padding: 10px 14px; color: var(--text); font-family:inherit; font-size:14px;
         }
-        .filter-bar select option { background: var(--bg2); }
+        .filter-bar select option { background: var(--input-bg); }
 
         .courses-section { padding: 0 64px 80px; }
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
+        .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
         .course-card {
             background: var(--bg2); border: 1px solid var(--border);
             border-radius: var(--radius-lg); overflow:hidden;
@@ -83,30 +112,11 @@
             padding-top:12px; border-top:1px solid var(--border);
             font-size:12px; color:var(--muted);
         }
-        .btn-dashboard {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #fff;
-    padding: 9px 20px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 13px;
-    text-decoration: none;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.btn-dashboard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 126, 255, 0.3);
-    color: #fff;
-}
         .enroll-btn {
             display:inline-flex; align-items:center; gap:6px;
             padding:8px 16px; background:var(--accent); border-radius:8px;
             color:#fff; font-size:13px; font-weight:600; text-decoration:none;
-            transition:background 0.15s;
+            transition:background 0.15s; border:none; cursor:pointer; font-family:inherit;
         }
         .enroll-btn:hover { background:#3a6aff; }
 
@@ -124,14 +134,15 @@
         LMS<span>App</span>
     </a>
     <div class="nav-links">
+        <button id="theme-btn" class="theme-toggle" onclick="toggleTheme()">🌙</button>
         @auth
             @if(auth()->user()->hasRole('admin'))
-    <a href="{{ route('admin.dashboard') }}" class="btn-dashboard">Dashboard →</a>
-        @elseif(auth()->user()->hasRole('instructor'))
-    <a href="{{ route('instructor.dashboard') }}" class="btn-dashboard">Dashboard →</a>
-        @else
-    <a href="{{ route('student.dashboard') }}" class="btn-dashboard">Dashboard →</a>
-        @endif
+                <a href="{{ route('admin.dashboard') }}" class="btn-dashboard">Dashboard →</a>
+            @elseif(auth()->user()->hasRole('instructor'))
+                <a href="{{ route('instructor.dashboard') }}" class="btn-dashboard">Dashboard →</a>
+            @else
+                <a href="{{ route('student.dashboard') }}" class="btn-dashboard">Dashboard →</a>
+            @endif
         @else
             <a href="{{ route('login') }}" class="btn btn-outline">Masuk</a>
             <a href="{{ route('register') }}" class="btn btn-fill">Daftar</a>
@@ -146,8 +157,7 @@
 
 <div class="filter-bar">
     <form method="GET" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
-        <input type="text" name="search" value="{{ request('search') }}"
-               placeholder="🔍 Cari kursus...">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="🔍 Cari kursus...">
         <select name="category" onchange="this.form.submit()">
             <option value="">Semua Kategori</option>
             @foreach($categories ?? [] as $cat)
@@ -213,6 +223,19 @@
 </div>
 
 <footer>© {{ date('Y') }} LMSApp · Semangat Belajar! 🚀</footer>
+
+<script>
+    const btn = document.getElementById('theme-btn');
+    if (document.documentElement.classList.contains('light')) {
+        btn.textContent = '☀️';
+    }
+
+    function toggleTheme() {
+        const isLight = document.documentElement.classList.toggle('light');
+        btn.textContent = isLight ? '☀️' : '🌙';
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }
+</script>
 
 </body>
 </html>

@@ -29,12 +29,28 @@
             --radius-lg: 20px;
         }
 
+        /* ── Light Mode ── */
+        html.light {
+            --bg:        #f0f2f8;
+            --bg2:       #ffffff;
+            --bg3:       #e4e7f0;
+            --border:    rgba(0,0,0,0.08);
+            --text:      #1a1d2e;
+            --text-muted:#6b7280;
+            --accent:    #4f7eff;
+            --accent2:   #7c3aed;
+            --success:   #10b981;
+            --warning:   #f59e0b;
+            --danger:    #ef4444;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
             display: flex;
+            transition: background 0.2s, color 0.2s;
         }
 
         /* ── Sidebar ── */
@@ -48,6 +64,7 @@
             position: fixed;
             top: 0; left: 0;
             z-index: 100;
+            transition: background 0.2s;
         }
 
         .sidebar-logo {
@@ -137,6 +154,7 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 13px;
             font-weight: 700;
+            color: #fff;
         }
 
         .user-info .name { font-size: 13px; font-weight: 600; }
@@ -159,6 +177,23 @@
         }
         .logout-btn:hover { color: var(--danger); }
 
+        /* ── Theme Toggle Button ── */
+        .theme-toggle {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 7px 11px;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--text);
+            transition: all 0.15s;
+            line-height: 1;
+        }
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+
         /* ── Main ── */
         .main-content {
             margin-left: 260px;
@@ -178,6 +213,13 @@
             position: sticky;
             top: 0;
             z-index: 50;
+            transition: background 0.2s;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .page-title {
@@ -324,10 +366,7 @@
             transition: all 0.15s;
         }
 
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-        }
+        .btn-primary  { background: var(--accent); color: #fff; }
         .btn-primary:hover { background: #3a6aff; }
 
         .btn-secondary {
@@ -337,16 +376,10 @@
         }
         .btn-secondary:hover { background: rgba(255,255,255,0.07); }
 
-        .btn-danger {
-            background: rgba(239,68,68,0.15);
-            color: #f87171;
-        }
+        .btn-danger { background: rgba(239,68,68,0.15); color: #f87171; }
         .btn-danger:hover { background: rgba(239,68,68,0.25); }
 
-        .btn-success {
-            background: var(--success);
-            color: #fff;
-        }
+        .btn-success { background: var(--success); color: #fff; }
         .btn-success:hover { background: #059669; }
 
         .btn-sm { padding: 6px 12px; font-size: 12px; }
@@ -385,10 +418,7 @@
             font-size: 14px;
             transition: border-color 0.15s;
         }
-        .form-control:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
+        .form-control:focus { outline: none; border-color: var(--accent); }
         select.form-control option { background: var(--bg3); }
         .form-error { font-size: 12px; color: var(--danger); margin-top: 5px; }
 
@@ -406,18 +436,23 @@
             transition: width 0.5s ease;
         }
 
-        /* ── Responsive ── */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .main-content { margin-left: 0; }
         }
     </style>
 
+    {{-- Apply theme before render to avoid flash --}}
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('light');
+        }
+    </script>
+
     @stack('styles')
 </head>
 <body>
 
-{{-- Sidebar --}}
 <aside class="sidebar">
     <div class="sidebar-logo">
         <div class="icon">🎓</div>
@@ -445,14 +480,19 @@
     </div>
 </aside>
 
-{{-- Main --}}
 <div class="main-content">
     <div class="topbar">
         <div class="page-title">
             @yield('page-title', 'Dashboard')
             <small>@yield('page-subtitle', '')</small>
         </div>
-        <div>@yield('topbar-actions')</div>
+        <div class="topbar-right">
+            {{-- Dark Mode Toggle --}}
+            <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Toggle tema">
+                🌙
+            </button>
+            @yield('topbar-actions')
+        </div>
     </div>
 
     <div class="content-area">
@@ -467,6 +507,21 @@
         @yield('content')
     </div>
 </div>
+
+<script>
+    // Set correct icon on load
+    const btn = document.getElementById('theme-btn');
+    if (document.documentElement.classList.contains('light')) {
+        btn.textContent = '☀️';
+    }
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isLight = html.classList.toggle('light');
+        btn.textContent = isLight ? '☀️' : '🌙';
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }
+</script>
 
 @stack('scripts')
 </body>

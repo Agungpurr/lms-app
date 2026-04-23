@@ -51,6 +51,12 @@
                     </x-slot>
                 </x-dropdown>
             </div>
+            <button onclick="toggleDarkMode()" id="theme-btn"
+    style="background:var(--bg3); border:1px solid var(--border); 
+           border-radius:10px; padding:8px 12px; cursor:pointer; 
+           color:var(--text); font-size:16px; transition:all 0.2s;">
+    🌙
+</button>
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
