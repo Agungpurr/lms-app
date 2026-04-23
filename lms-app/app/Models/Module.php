@@ -5,7 +5,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Module extends Model
 {
-    protected $fillable = ['coursse_id', 'title', 'order'];
+    protected $fillable = [
+        'course_id', // ✅ fix: coursse_id → course_id
+        'title',
+        'description',
+        'order'
+    ];
 
     public function course()
     {

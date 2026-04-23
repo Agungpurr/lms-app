@@ -34,7 +34,7 @@ class User extends Authenticatable
     // Relasi sebagai Instructor 
     public function courses()
     {
-        return $this->hasMany(Course::class);
+        return $this->hasMany(Course::class, 'user_id');
     }
 
     // Relasi sebagai student
@@ -52,11 +52,17 @@ class User extends Authenticatable
 
     public function quizResults()
     {
-        return $this->hasMany(Quizresult::class);
+        return $this->hasMany(QuizResult::class); // Perbaiki: QuizResult bukan Quizresult
+    }
+
+    // Relasi untuk lesson progress
+    public function lessonProgress()
+    {
+        return $this->hasMany(LessonProgress::class);
     }
 
     // Helper method
-    // Cek apakah studengt sudah enroll di course tertentu
+    // Cek apakah student sudah enroll di course tertentu
     public function isEnrolledIn(Course $course): bool
     {
         return $this->enrollments()
@@ -68,14 +74,19 @@ class User extends Authenticatable
     public function progressIn(Course $course): int
     {
         $lessonIds = $course->modules
-                            ->flatMap->lessons
+                            ->flatMap(function($module) {
+                                return $module->lessons;
+                            })
                             ->pluck('id');
+        
         $total = $lessonIds->count();
         if ($total === 0) return 0;
+        
         $completed = $this->lessonProgress()
                         ->whereIn('lesson_id', $lessonIds)
                         ->where('completed', true)
                         ->count();
+        
         return (int) round(($completed / $total) * 100);
     }
 }

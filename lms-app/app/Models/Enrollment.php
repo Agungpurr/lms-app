@@ -14,10 +14,9 @@ class Enrollment extends Model
 
     public function course()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Course::class); // ✅ fix: Course bukan User
     }
 
-    // Hitung progress student di course ini
     public function getProgressAttribute(): int
     {
         $course = $this->course->load('modules.lessons');
@@ -26,7 +25,7 @@ class Enrollment extends Model
         if ($totalLessons === 0) return 0;
 
         $completed = LessonProgress::where('user_id', $this->user_id)
-            ->whreIn('lesson_id', $course->modules->flatMap->lessons->pluck('id'))
+            ->whereIn('lesson_id', $course->modules->flatMap->lessons->pluck('id')) // ✅ fix typo
             ->where('completed', true)
             ->count();
 

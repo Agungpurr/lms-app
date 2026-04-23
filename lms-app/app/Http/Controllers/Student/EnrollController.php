@@ -16,7 +16,7 @@ class EnrollController extends Controller
         abort_if($course->status !== 'published', 404);
 
         if ($user->isEnrolledIn($course)) {
-            return redirect()->route('student.course.show', $course)
+            return redirect()->route('student.courses.show', $course)
                 ->with('info', 'Kamu sudah terdaftar di course ini.');
         }
 
@@ -27,7 +27,7 @@ class EnrollController extends Controller
             'status'      => 'active',
         ]);
 
-        return redirect()->route('student.course.show', $course)
+        return redirect()->route('student.courses.show', $course)
             ->with('success', '🎉 Berhasil join course! Selamat belajar.');
     }
 
@@ -47,7 +47,7 @@ class EnrollController extends Controller
 
         $progress = $user->progressIn($course);
 
-        return view('student.course.show', compact('course', 'completedLessonIds', 'progress'));
+        return view('student.courses.show', compact('course', 'completedLessonIds', 'progress'));
     }
 
     public function lesson(Course $course, Lesson $lesson)

@@ -283,7 +283,13 @@
     <div class="nav-links">
         <a href="{{ route('courses.index') }}" class="btn-outline">Semua Kursus</a>
         @auth
-            <a href="#" class="btn-fill">Dashboard →</a>
+            @if(auth()->user()->hasRole('admin'))
+    <a href="{{ route('admin.dashboard') }}" class="btn-fill">Dashboard →</a>
+@elseif(auth()->user()->hasRole('instructor'))
+    <a href="{{ route('instructor.dashboard') }}" class="btn-fill">Dashboard →</a>
+@else
+    <a href="{{ route('student.dashboard') }}" class="btn-fill">Dashboard →</a>
+@endif
         @else
             <a href="{{ route('login') }}" class="btn-outline">Masuk</a>
             <a href="{{ route('register') }}" class="btn-fill">Daftar Gratis</a>

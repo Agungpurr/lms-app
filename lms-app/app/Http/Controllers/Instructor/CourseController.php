@@ -9,8 +9,13 @@ class CourseController extends Controller
 {
     public function index()
     {
-        $course = Course::where('user_id', auth()->id())->latest()->paginate(10);
-        return view('insructor.courses.create');
+        $courses = Course::where('user_id', auth()->id())->latest()->paginate(10);
+        return view('instructor.courses.index', compact('courses')); // ✅ fix typo + view yang benar
+    }
+
+    public function create()
+    {
+        return view('instructor.courses.create'); // ✅ method create yang hilang
     }
 
     public function store(Request $request)
@@ -19,9 +24,9 @@ class CourseController extends Controller
             'title'         => 'required|string|max:255',
             'description'   => 'nullable|string',
             'category'      => 'nullable|string',
-            'level'         => 'required|in:beginner, intermediate, advanced',
-            'price'         => 'required|numeric|min:0',
-            'thumbnail'     => 'nullable|image\max:2048',
+            'level'         => 'required|in:beginner,intermediate,advanced', // ✅ hapus spasi
+            'price'         => 'nullable|numeric|min:0',
+            'thumbnail'     => 'nullable|image|max:2048', // ✅ ganti \ jadi |
         ]);
 
         if ($request->hasFile('thumbnail')) {
@@ -29,15 +34,21 @@ class CourseController extends Controller
         }
 
         $validated['user_id'] = auth()->id();
-        $validated['status'] = 'draft';
+          $validated['status']  = $request->has('is_published') ? 'published' : 'draft';
 
         Course::create($validated);
 
-        return redirect()->route('instructor.course.index')
+        return redirect()->route('instructor.courses.index') // ✅ fix nama route
                          ->with('success', 'Course berhasil dibuat!');
     }
 
     public function edit(Course $course)
+    {
+        abort_if($course->user_id !== auth()->id(), 403);
+        return view('instructor.courses.edit', compact('course')); // ✅ return view, bukan validasi
+    }
+
+    public function update(Request $request, Course $course) // ✅ method update yang hilang
     {
         abort_if($course->user_id !== auth()->id(), 403);
 
@@ -45,10 +56,12 @@ class CourseController extends Controller
             'title'         => 'required|string|max:255',
             'description'   => 'nullable|string',
             'status'        => 'required|in:draft,published',
-            'level'         => 'required|in:beginner, intermediate, advanced',
+            'level'         => 'required|in:beginner,intermediate,advanced', // ✅ hapus spasi
             'price'         => 'required|numeric|min:0',
         ]);
 
+
+        $validated['status'] = $request->has('is_published') ? 'published' : 'draft';
         $course->update($validated);
 
         return redirect()->route('instructor.courses.index')
@@ -60,5 +73,5 @@ class CourseController extends Controller
         abort_if($course->user_id !== auth()->id(), 403);
         $course->delete();
         return back()->with('success', 'Course dihapus.');
-    }    
+    }
 }

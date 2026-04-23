@@ -28,7 +28,24 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended($this->getDashboardRoute());
+    }
+
+    /**
+     * Get dashboard route based on user role using Spatie Permission
+     */
+    protected function getDashboardRoute(): string
+    {
+        $user = Auth::user();
+        
+        // Gunakan hasRole() dari Spatie Permission
+        if ($user->hasRole('admin')) {
+            return route('admin.dashboard', absolute: false);
+        } elseif ($user->hasRole('instructor')) {
+            return route('instructor.dashboard', absolute: false);
+        } else {
+            return route('student.dashboard', absolute: false);
+        }
     }
 
     /**

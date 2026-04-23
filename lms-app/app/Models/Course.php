@@ -15,7 +15,7 @@ class Course extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function models()
+    public function modules()
     {
         return $this->hasMany(Module::class)->orderBy('order');
     }

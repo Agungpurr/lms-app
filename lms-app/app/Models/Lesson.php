@@ -13,7 +13,7 @@ class Lesson extends Model
     public function module()
     {
         return $this->belongsTo(Module::class);
-    } 
+    }
 
     public function progress()
     {
@@ -24,7 +24,6 @@ class Lesson extends Model
     {
         return $this->progress()
                     ->where('user_id', $user->id)
-                    ->where('user_id', $user->id)
-                    ->existss();
+                    ->exists(); // ✅ fix: existss() → exists()
     }
 }
